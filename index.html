@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Landslide Risk Alert</title>
+
+    <!-- CSS connection -->
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+</head>
+<body>
+
+    <!-- Title -->
+    <h1>Landslide Risk Alert</h1>
+    <p>Community and environmental data-driven system for landslide risk assessment and early warning.</p>
+
+    <!-- Main Buttons -->
+    <div class="main-cards">
+
+    <div class="big-card report-card">
+        <div class="icon-box">
+            <i class="fa-solid fa-comment"></i>
+        </div>
+       <a href="reports.html" class="card-link">
+    <div class="card">
+        <h3>Reports Observation</h3>
+    </div>
+</a>
+ 
+    </div>
+
+    <div class="big-card status-card">
+        <div class="icon-box light">
+            <i class="fa-solid fa-map"></i>
+        </div>
+    <a href="map.html" class="card-link">
+    <div class="card">
+        <h3>View Risk Status</h3>
+    </div>
+</a>
+
+    </div>
+
+</div>
+
+    <!-- Bottom Navigation -->
+    <div class="bottom-nav">
+    <div class="nav-item active">
+        <i class="fa-solid fa-house"></i>
+        <span>Home</span>
+    </div>
+
+    <div class="nav-item"onclick="location.href='map.html'">
+    <i class="fa-solid fa-map"></i>
+        <span>Map</span>
+    </div>
+    
+  <div class="nav-item" onclick="location.href='reports.html'">
+    <i class="fa-solid fa-comment"></i>
+    <span>Reports</span>
+</div>
+  
+    <div class="nav-item"onclick="location.href='alerts.html'">
+        <i class="fa-solid fa-bell"></i>
+        <span>Alerts</span>
+    </div>
+</div>
+
+    <!-- JS connection -->
+    <script src="script.js"></script>
+</body>
+</html>

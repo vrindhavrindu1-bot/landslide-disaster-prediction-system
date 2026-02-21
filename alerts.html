@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Alerts</title>
+</head>
+<body>
+
+<h2>All Alerts</h2>
+
+<div id="alertsContainer"></div>
+
+<script>
+
+var reports = JSON.parse(localStorage.getItem("reports")) || [];
+var container = document.getElementById("alertsContainer");
+
+if (reports.length === 0) {
+    container.innerHTML = "No reports yet";
+} else {
+
+    reports.forEach(function(report) {
+
+        var div = document.createElement("div");
+
+        div.style.border = "1px solid red";
+        div.style.margin = "10px";
+        div.style.padding = "10px";
+
+        div.innerHTML =
+            "Reported By: " + report.username + "<br>" +
+    
+            "Observation: " + report.observation + "<br>" +
+            "Location: " + report.location + "<br>" +
+            "Risk: " + report.risk + "<br>" +
+            "Time: " + report.time;
+
+        container.appendChild(div);
+    });
+
+}
+
+</script>
+</body>
+</html>

@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Reports Observation</title>
+
+<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+</head>
+<body>
+
+<div class="reports-container">
+
+    <h1>Early Warning</h1>
+    <p class="subtitle">Reports signs before they become disasters.</p>
+<label>Your Name</label>
+<input type="text" id="username" placeholder="Enter your name">
+
+    <!-- Location -->
+    <label>Location</label>
+    <input type="text" id="location" placeholder="Enter location">
+
+    <!-- Observation Type -->
+    <label>Observation Type</label>
+    <select id="observation">
+        <option value="Crack in soil">Crack in soil</option>
+        <option value="Rock fall">Rock fall</option>
+        <option value="Land sinking">Land sinking</option>
+        <option value="Muddy water flow">Muddy water flow</option>
+        <option value="Water leakage from slope">Water leakage from slope</option>
+    </select>
+
+    <!-- Threat Severity -->
+    <label>Threat Severity</label>
+
+    <div class="severity-buttons">
+    <button type="button" class="severity-btn active" onclick="setRisk(this, 'Medium')">Medium</button>
+    <button type="button" class="severity-btn" onclick="setRisk(this, 'Low')">Low</button>
+    <button type="button" class="severity-btn" onclick="setRisk(this, 'High')">High</button>
+</div>
+
+
+
+    <!-- Submit Button -->
+    <button type="button" class="submit-btn" onclick="submitReport()">Submit Reports</button>
+
+</div>
+
+<script>
+var selectedRisk = "Medium";
+
+function setRisk(button,level) {
+    selectedRisk = level;
+     var buttons = document.querySelectorAll(".severity-btn");
+
+    buttons.forEach(function(btn) {
+        btn.classList.remove("active");
+    });
+
+    button.classList.add("active");
+
+    console.log("Selected:", selectedRisk);
+}
+function submitReport() {
+if(window.alreadySubmitted)return;
+window.alreadySubmitted = true;
+    var username = document.getElementById("username").value;
+    var observation = document.getElementById("observation").value;
+    var location = document.getElementById("location").value;
+
+    if (navigator.geolocation) {
+
+        navigator.geolocation.getCurrentPosition(function(position) {
+
+            var lat = 10.8505;
+            var lng = 76.2711;
+
+            var reports = JSON.parse(localStorage.getItem("reports")) || [];
+
+            var newReport = {
+                username: username,
+                observation: observation,
+                location:location,
+                risk: selectedRisk,
+                latitude: lat,
+                longitude: lng,
+                time: new Date().toLocaleString()
+            };
+
+            reports.push(newReport);
+
+            localStorage.setItem("reports", JSON.stringify(reports));
+
+            alert("Report Saved Successfully!");
+
+        });
+
+    } else {
+        alert("Location not supported");
+    }
+}
+
+
+</script>
+<div class="bottom-nav">
+    <div class="nav-item active">
+        <i class="fa-solid fa-house"></i>
+        <span>Home</span>
+    </div>
+
+    <div class="nav-item" onclick="location.href='map.html'">
+        <i class="fa-solid fa-map"></i>
+        <span>Map</span>
+    </div>
+
+    <div class="nav-item" onclick="location.href='reports.html'">
+        <i class="fa-solid fa-comment"></i>
+        <span>Reports</span>
+    </div>
+
+    <div class="nav-item" onclick="location.href='alerts.html'">
+        <i class="fa-solid fa-bell"></i>
+        <span>Alerts</span>
+    </div>
+</div>
+
+</body>
+</html>

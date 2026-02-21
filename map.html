@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Landslide Risk Map</title>
+
+    <!-- Leaflet CSS -->
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+    />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+    <!-- Your CSS -->
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+<div id="map" style="height:500px;"></div>
+
+<h2 style="text-align:center;">Risk Map</h2>
+
+<div id="map" style="height: 500px; width:100%;"></div>
+<!-- Bottom Navigation -->
+<div class="bottom-nav">
+    <div class="nav-item" onclick="goHome()">
+        <i class="fa-solid fa-house"></i>
+        <span>Home</span>
+    </div>
+
+    <div class="nav-item active">
+        <i class="fa-solid fa-map"></i>
+        <span>Map</span>
+    </div>
+
+    <div class="nav-item" onclick="goReport()">
+        <i class="fa-solid fa-comment"></i>
+        <span>Reports</span>
+    </div>
+
+    <div class="nav-item" onclick="goAlerts()">
+        <i class="fa-solid fa-bell"></i>
+        <span>Alerts</span>
+    </div>
+</div>
+ 
+            <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+<!-- Leaflet JS -->
+<script>
+
+
+
+    // Create map
+    var map = L.map('map').setView([10.8505, 76.2711], 7);
+
+    // Add OpenStreetMap tiles
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '© OpenStreetMap'
+    }).addTo(map);
+// Get saved reports
+var reports = JSON.parse(localStorage.getItem("reports")) || [];
+console.log(reports);
+// Loop through reports
+reports.forEach(function(report) {
+
+    
+
+    L.marker([report.latitude,report.longitude]).addTo(map)
+    .bindPopup(
+        "User: " + report.username + "<br>" +
+        "Location " + report.location + "<br>" +
+        "Risk " + report.risk
+    );
+});
+
+   
+
+
+</script>
+</script>
+
+
+
+
+</script>
+
+  src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js">
+</script>
+
+<!-- Your JS -->
+<script src="script.js"></script>
+
+
+</body>
+</html>
