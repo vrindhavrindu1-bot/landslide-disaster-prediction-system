@@ -1,1 +1,0 @@
-# landslide-disaster-prediction-system
