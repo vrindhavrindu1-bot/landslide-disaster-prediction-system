@@ -1,84 +1,124 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Landslide Reports</title>
-  <style>
-    body { font-family: Arial, sans-serif; margin: 20px; }
-    table { border-collapse: collapse; width: 100%; margin-top: 20px; }
-    th, td { border: 1px solid #333; padding: 8px; text-align: left; }
-    th { background-color: #f2f2f2; }
-  </style>
+    <meta charset="UTF-8">
+    <title>Reports Observation</title>
+
+<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
 </head>
 <body>
-  <h2>Submit a New Report</h2>
-  <form id="reportForm">
-    <input type="text" name="user" placeholder="User" required>
-    <input type="text" name="location" placeholder="Location" required>
-    <input type="text" name="observation" placeholder="Observation" required>
-    <select name="severity" required>
-      <option value="High">High</option>
-      <option value="Medium">Medium</option>
-      <option value="Low">Low</option>
-    </select>
-    <button type="submit">Submit Report</button>
-  </form>
 
-  <h2>Landslide Reports</h2>
-  <table>
-    <thead>
-      <tr>
-        <th>User</th>
-        <th>Location</th>
-        <th>Observation</th>
-        <th>Severity</th>
-      </tr>
-    </thead>
-    <tbody id="reports"></tbody>
-  </table>
+<div class="reports-container">
 
-  
+    <h1>Early Warning</h1>
+    <p class="subtitle">Reports signs before they become disasters.</p>
+<label>Your Name</label>
+<input type="text" id="username" placeholder="Enter your name">
+
+    <!-- Location -->
+    <label>Location</label>
+    <input type="text" id="location" placeholder="Enter location">
+
+    <!-- Observation Type -->
+    <label>Observation Type</label>
+    <input type="text" id="observation"
+    placeholder="Enter observation details">
+
+    <!-- Threat Severity -->
+    <label>Threat Severity</label>
+
+    <div class="severity-buttons">
+    <button type="button" class="severity-btn active" onclick="setRisk(this, 'Medium')">Medium</button>
+    <button type="button" class="severity-btn" onclick="setRisk(this, 'Low')">Low</button>
+    <button type="button" class="severity-btn" onclick="setRisk(this, 'High')">High</button>
+</div>
+
+
+
+    <!-- Submit Button -->
+    <button type="button" class="submit-btn" onclick="submitReport()">Submit Reports</button>
+
+</div>
+
 <script>
-document.getElementById("reportForm").addEventListener("submit", function(e) {
-  e.preventDefault();
-  const formData = new FormData(e.target);
-  const data = Object.fromEntries(formData.entries());
+var selectedRisk = "Medium";
 
-  fetch("http://127.0.0.1:5000/submit-report", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(data)
-  })
-  .then(res => res.json())
-  .then(result => {
-    alert("Report submitted successfully!");
-    loadReports(); // refresh table
-  })
-  .catch(err => console.error("Error submitting report:", err));
-});
+function setRisk(button,level) {
+    selectedRisk = level;
+     var buttons = document.querySelectorAll(".severity-btn");
 
-// Load reports from backend
-function loadReports() {
-  fetch("http://127.0.0.1:5000/get-reports")
-    .then(res => res.json())
-    .then(data => {
-      const reportEl = document.getElementById("reports");
-      reportEl.innerHTML = "";
-      data.reports.forEach(report => {
-        const row = document.createElement("tr");
-        row.innerHTML = `
-          <td>${report.user}</td>
-          <td>${report.location}</td>
-          <td>${report.observation}</td>
-          <td style="color:${report.severity.toLowerCase()==="high"?"red":report.severity.toLowerCase()==="medium"?"orange":"green"}">${report.severity}</td>
-        `;
-        reportEl.appendChild(row);
-      });
-    })
-    .catch(err => console.error("Error loading reports:", err));
+    buttons.forEach(function(btn) {
+        btn.classList.remove("active");
+    });
+
+    button.classList.add("active");
+
+    console.log("Selected:", selectedRisk);
+}
+function submitReport() {
+if(window.alreadySubmitted)return;
+window.alreadySubmitted = true;
+    var username = document.getElementById("username").value;
+    var observation = document.getElementById("observation").value;
+    var location = document.getElementById("location").value;
+
+    if (navigator.geolocation) {
+
+        navigator.geolocation.getCurrentPosition(function(position) {
+
+            var lat = 10.8505;
+            var lng = 76.2711;
+
+            var reports = JSON.parse(localStorage.getItem("reports")) || [];
+
+            var newReport = {
+                username: username,
+                observation: observation,
+                location:location,
+                risk: selectedRisk,
+                latitude: lat,
+                longitude: lng,
+                time: new Date().toLocaleString()
+            };
+
+            reports.push(newReport);
+
+            localStorage.setItem("reports", JSON.stringify(reports));
+
+            alert("Report Saved Successfully!");
+
+        });
+
+    } else {
+        alert("Location not supported");
+    }
 }
 
-// Load reports when page opens
-window.onload = loadReports;
-</script>
 
+</script>
+<div class="bottom-nav">
+    <div class="nav-item active">
+        <i class="fa-solid fa-house"></i>
+        <span>Home</span>
+    </div>
+
+    <div class="nav-item" onclick="location.href='map.html'">
+        <i class="fa-solid fa-map"></i>
+        <span>Map</span>
+    </div>
+
+    <div class="nav-item" onclick="location.href='reports.html'">
+        <i class="fa-solid fa-comment"></i>
+        <span>Reports</span>
+    </div>
+
+    <div class="nav-item" onclick="location.href='alerts.html'">
+        <i class="fa-solid fa-bell"></i>
+        <span>Alerts</span>
+    </div>
+</div>
+
+</body>
+</html>
