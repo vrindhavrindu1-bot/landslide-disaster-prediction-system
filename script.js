@@ -72,4 +72,22 @@ function setRisk(button, level) {
 
     button.classList.add("active");
 }
-
+function predictRisk(){
+    let rainfall = document.getElementById("rainfall").value;
+    let slope = document.getElementById("slope").value;
+fetch("http://127.0.0.1:5000/predict-risk", {
+    method: "POST",
+    headers: {
+        "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+        rainfall: parseFloat(rainfall),
+        slope: parseFloat(slope)
+    })
+})
+.then(response => response.json())
+.then(data => {
+    document.getElementById("result").innerText =
+    "Risk level:" + data.risk_level;
+});
+}
