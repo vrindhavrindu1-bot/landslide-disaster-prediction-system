@@ -20,7 +20,8 @@ def init_db():
             slope INTEGER,
             soil INTEGER,
             soil_flow INTEGER,
-            risk_level TEXT
+            risk_level TEXT,
+            support_count INTEGER DEFAULT 0
         )
     """)
     conn.commit()
@@ -30,13 +31,12 @@ init_db()
 
 # Load trained model
 model = joblib.load("landslide_model.pkl")
-
 @app.route("/")
 def home():
     return "Backend is running!"
-
 @app.route("/predict-risk", methods=["POST"])
 def predict():
+    
     data = request.json
 
     latitude = float(data.get("latitude", 0))
@@ -70,9 +70,50 @@ def predict():
     conn.close()
 
     return jsonify({"risk_level": risk})
+@app.route("/support/<int:report_id>", methods=["POST"])
+def support_report(report_id):
+    conn = sqlite3.connect("reports.db")
+    cursor = conn.cursor()
+
+    cursor.execute("""
+        UPDATE reports
+        SET support_count = support_count + 1
+        WHERE id = ?
+    """, (report_id,))
+
+    conn.commit()
+    conn.close()
+
+    return {"message": "Support added"}
+@app.route("/get-reports")
+def get_reports():
+    conn = sqlite3.connect("reports.db")
+    cursor = conn.cursor()
+
+    cursor.execute("""
+        SELECT id, latitude, longitude, risk_level, support_count
+        FROM reports
+    """)
+
+    rows = cursor.fetchall()
+    conn.close()
+
+    reports = []
+    for row in rows:
+        reports.append({
+            "id": row[0],
+            "latitude": row[1],
+            "longitude": row[2],
+            "risk_level": row[3],
+            "support_count": row[4]
+        })
+
+    return jsonify(reports)
+    
 
 
 
 if __name__ == "__main__":
     app.run(debug=True)
+
 
