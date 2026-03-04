@@ -348,4 +348,16 @@ body {
 .dropdown div:hover {
     background: #f2f2f2;
 }
+.confirmed {
+    background-color: orange;
+}
+
+.verification {
+    background-color: blue;
+}
+
+.watch {
+    background-color: gray;
+}
+
 
