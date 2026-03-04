@@ -72,5 +72,37 @@ function setRisk(button, level) {
 
     button.classList.add("active");
 }
+fetch("http://localhost:5000/reports")
+.then(res => res.json())
+.then(data => {
 
+    let container = document.getElementById("reportContainer");
 
+    if (!container) return;   // safety check
+
+    data.forEach(report => {
+let statusLabel = "";
+        let badgeClass = "";
+
+        if (report.support_count >= 10) {
+            statusLabel = "CONFIRMED ALERT";
+            badgeClass = "confirmed";
+        } 
+        else if (report.support_count >= 3) {
+            statusLabel = "UNDER VERIFICATION";
+            badgeClass = "verification";
+        } 
+        else {
+            statusLabel = "OBSERVATION WATCH";
+            badgeClass = "watch";
+        }
+container.innerHTML += `
+            <div class="report-card">
+                <h3>${report.location}</h3>
+                <p>${report.details}</p>
+                <span class="${badgeClass}">${statusLabel}</span>
+            </div>
+        `;
+    });
+
+});
