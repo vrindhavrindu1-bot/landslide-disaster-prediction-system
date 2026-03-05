@@ -36,18 +36,19 @@ CREATE TABLE IF NOT EXISTS users (
 
 init_db()
 def get_rainfall_level(lat, lon):
-    API_KEY = "YOUR_API_KEY"
+    
 
-    url = f"https://api.openweathermap.org/data/2.5/weather?lat={lat}&lon={lon}&appid={API_KEY}&units=metric"
+API_KEY = "b2a84e5e513605b4d8136a3245ef5a58"
+url = f"https://api.openweathermap.org/data/2.5/weather?lat={lat}&lon={lon}&appid={API_KEY}&units=metric"
 
     response = requests.get(url)
     data = response.json()
 
-    rain = data.get("rain", {}).get("1h", 0)
+    rainfall = data.get("rain", {}).get("1h", 0)
 
-    if rain < 2:
+    if rainfall < 2:
         return 0
-    elif rain < 10:
+    elif rainfall < 10:
         return 1
     else:
         return 2
@@ -210,6 +211,7 @@ def login():
 
 if __name__ == "__main__":
     app.run(debug=True)
+
 
 
 
