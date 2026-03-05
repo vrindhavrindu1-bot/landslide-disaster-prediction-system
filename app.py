@@ -2,8 +2,8 @@ from flask_cors import CORS
 from flask import Flask, request, jsonify
 import joblib
 import numpy as np
-import random
 import sqlite3
+import requests
 
 app = Flask(__name__)
 CORS(app)
@@ -24,10 +24,64 @@ def init_db():
             support_count INTEGER DEFAULT 0
         )
     """)
+    cursor.execute("""
+CREATE TABLE IF NOT EXISTS users (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    username TEXT UNIQUE,
+    password TEXT
+)
+""")
     conn.commit()
     conn.close()
 
 init_db()
+def get_rainfall_level(lat, lon):
+    API_KEY = "YOUR_API_KEY"
+
+    url = f"https://api.openweathermap.org/data/2.5/weather?lat={lat}&lon={lon}&appid={API_KEY}&units=metric"
+
+    response = requests.get(url)
+    data = response.json()
+
+    rain = data.get("rain", {}).get("1h", 0)
+
+    if rain < 2:
+        return 0
+    elif rain < 10:
+        return 1
+    else:
+        return 2
+def get_slope(lat, lon):
+    url = f"https://api.open-elevation.com/api/v1/lookup?locations={lat},{lon}"
+
+    response = requests.get(url)
+    data = response.json()
+
+    elevation = data["results"][0]["elevation"]
+
+    if elevation < 100:
+        return 0
+    elif elevation < 500:
+        return 1
+    else:
+        return 2
+def get_soil_type(lat, lon):
+    url = f"https://rest.isric.org/soilgrids/v2.0/properties/query?lon={lon}&lat={lat}"
+
+    response = requests.get(url)
+    data = response.json()
+
+    if "properties" in data:
+        return 1
+    else:
+        return 0
+def get_soil_flow(rainfall):
+    if rainfall == 2:
+        return 2
+    elif rainfall == 1:
+        return 1
+    else:
+        return 0
 
 # Load trained model
 model = joblib.load("landslide_model.pkl")
@@ -43,13 +97,10 @@ def predict():
     longitude = float(data.get("longitude", 0))
 
     crack = int(data.get("crack_observed", 0))
-
-    # Simulated accumulated values
-    rainfall = random.randint(0, 2)
-    slope = random.randint(0, 2)
-    soil = random.randint(0, 2)
-    soil_flow = random.randint(0, 2)
-
+    rainfall = get_rainfall_level(latitude, longitude)
+    slope = get_slope(latitude, longitude)
+    soil = get_soil_type(latitude, longitude)
+    soil_flow = get_soil_flow(rainfall) 
     features = np.array([[rainfall, slope, soil, crack, soil_flow]])
 
     prediction = model.predict(features)[0]
@@ -109,11 +160,56 @@ def get_reports():
         })
 
     return jsonify(reports)
+@app.route("/register", methods=["POST"])
+def register():
+    data = request.json
+
+    username = data.get("username")
+    password = data.get("password")
+
+    conn = sqlite3.connect("reports.db")
+    cursor = conn.cursor()
+
+    try:
+        cursor.execute(
+            "INSERT INTO users (username, password) VALUES (?, ?)",
+            (username, password)
+        )
+        conn.commit()
+        return {"message": "User registered"}
+    except:
+        return {"message": "Username already exists"}
+
+    finally:
+        conn.close()
+@app.route("/login", methods=["POST"])
+def login():
+    data = request.json
+
+    username = data.get("username")
+    password = data.get("password")
+
+    conn = sqlite3.connect("reports.db")
+    cursor = conn.cursor()
+
+    cursor.execute(
+        "SELECT * FROM users WHERE username=? AND password=?",
+        (username, password)
+    )
+
+    user = cursor.fetchone()
+    conn.close()
+
+    if user:
+        return {"message": "Login successful"}
+    else:
+        return {"message": "Invalid credentials"}
     
 
 
 
 if __name__ == "__main__":
     app.run(debug=True)
+
 
 
