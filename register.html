@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Register</title>
+</head>
+<body>
+
+<h2>Register</h2>
+
+<input type="text" id="regUser" placeholder="Username"><br><br>
+<input type="password" id="regPass" placeholder="Password"><br><br>
+
+<button onclick="register()">Register</button>
+
+<p id="msg" style="color:green;"></p>
+
+
+<script>
+function register() {
+
+    var username = document.getElementById("regUser").value.trim();
+    var password = document.getElementById("regPass").value.trim();
+
+    if(username === "" || password === ""){
+        document.getElementById("msg").innerText = "Fill all fields";
+        return;
+    }
+
+    fetch("http://127.0.0.1:5000/register", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+            username: username,
+            password: password
+        })
+    })
+    .then(res => res.json())
+    .then(data => {
+
+        document.getElementById("msg").innerText = data.message;
+
+        if(data.message === "Registered successfully"){
+            setTimeout(function(){
+                window.location.href = "index.html";
+            },2000);
+        }
+
+    })
+    .catch(error => {
+        console.log(error);
+        document.getElementById("msg").innerText = "Server error";
+    });
+
+}
+</script>
+</body>
+</html>   
